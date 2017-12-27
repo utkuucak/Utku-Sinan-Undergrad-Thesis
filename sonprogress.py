@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 import pygame
 
-cap = cv2.VideoCapture(r'C:\Users\Sinan\Desktop\bitirme\d2.mp4')
-car_cascade = cv2.CascadeClassifier('cars.xml')
+cap = cv2.VideoCapture(r'./d2.mp4')
+car_cascade = cv2.CascadeClassifier('./cars.xml')
 while(cap.isOpened()):
       ret, frame = cap.read()
       if ret: 
