@@ -2,7 +2,7 @@ import sys
 import math
 import cv2
 import numpy as np
-import pygame
+#import pygame
 
 cap = cv2.VideoCapture(r'./d2.mp4')
 car_cascade = cv2.CascadeClassifier('./cars.xml')
