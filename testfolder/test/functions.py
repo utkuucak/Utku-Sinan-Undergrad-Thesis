@@ -76,7 +76,7 @@ def draw_lane_lines(image, lines, color=[0, 0, 255], thickness=13):
     
 def draw_middle_line(image, lines, color=[0, 255, 0], thickness=13):
     """
-    Draw lines onto the input image.
+    Draw middle line between road lanes.
         Parameters:
             image: The input test image.
             lines: The output lines from Hough Transform.
@@ -96,3 +96,21 @@ def draw_middle_line(image, lines, color=[0, 255, 0], thickness=13):
             
             cv2.line(line_image, *mid,  color, thickness)
     return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
+    
+def draw_position_line(image, color=[255, 0, 0], thickness=13):
+    """
+    Draw a line in the middle of the camera's view to track the car's
+    current positon.
+        Parameters:
+            image: The input test image.
+            color: Line color.
+            thickness: Line thickness.    
+    """
+    position_image = np.zeros_like(image)        
+    img_rows = image.shape[0]
+    img_columns = image.shape[1]
+    position_line = ((int(img_columns*0.5), img_rows),(int(img_columns*0.5), int(img_rows*0.5)))
+    
+    cv2.line(position_image, *position_line, color, thickness)
+    
+    return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0)
