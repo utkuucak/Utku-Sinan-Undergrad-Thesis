@@ -71,6 +71,21 @@ def draw_lane_lines(image, lines, color=[0, 0, 255], thickness=13):
     line_image = np.zeros_like(image)
     for line in lines:
         if line is not None:
+            cv2.line(line_image, *line,  color, thickness)
+    return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)    
+    
+def draw_middle_line(image, lines, color=[0, 255, 0], thickness=13):
+    """
+    Draw lines onto the input image.
+        Parameters:
+            image: The input test image.
+            lines: The output lines from Hough Transform.
+            color (Default = red): Line color.
+            thickness (Default = 12): Line thickness. 
+    """
+    line_image = np.zeros_like(image)
+    for line in lines:
+        if line is not None:
             #b=beginning e=end  l1b=line1beginningpoints
             (line1,line2)=lines
             (l1b,l1e)=line1
