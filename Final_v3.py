@@ -2,13 +2,12 @@ import cv2
 import skvideo.io
 import numpy as np
 from functions import Functions
-import time
 
 # Inheriting Functions
 func = Functions()
 
 # Capturing frames from video
-cap = skvideo.io.vread('test_input.mp4')
+cap = skvideo.io.vread('test.mp4')
 length = int(cap.shape[0])
 
 # Loading HAAR Cascade weight file
@@ -49,7 +48,8 @@ for control, frame in enumerate(cap):
 
     # Averaging and extrapolating the lines
     result = func.draw_lane_lines(src2, func.lane_lines(src, linesP))
-
+    result=func.draw_middle_line(result,func.lane_lines(src, linesP))
+    result=func.draw_position_line(result)
     # Drawing rectangle on cars which were found by HAAR Cascade
     for (x, y, w, h) in cars:
         cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
