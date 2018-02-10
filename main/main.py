@@ -7,11 +7,11 @@ from functions import Functions
 func = Functions()
 
 # Capturing frames from video
-cap = skvideo.io.vread('test.mp4')
+cap = skvideo.io.vread('../vids/test.mp4')
 length = int(cap.shape[0])
 
 # Loading HAAR Cascade weight file
-car_cascade = cv2.CascadeClassifier('cars.xml')
+car_cascade = cv2.CascadeClassifier('../train/cars.xml')
 
 for control, frame in enumerate(cap):
     # source image and copy of it
