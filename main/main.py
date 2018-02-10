@@ -48,8 +48,9 @@ for control, frame in enumerate(cap):
 
     # Averaging and extrapolating the lines
     result = func.draw_lane_lines(src2, func.lane_lines(src, linesP))
-    result=func.draw_middle_line(result,func.lane_lines(src, linesP))
-    result=func.draw_position_line(result)
+    result, mid_line=func.draw_middle_line(result,func.lane_lines(src, linesP))
+    result, pos_line=func.draw_position_line(result)
+    result = func.find_angle(result, mid_line, pos_line)
     # Drawing rectangle on cars which were found by HAAR Cascade
     for (x, y, w, h) in cars:
         cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
