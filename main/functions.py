@@ -98,7 +98,7 @@ class Functions():
                 mid=((midxb,midyb),(midxe,midye))
                 
                 cv2.line(line_image, *mid,  color, thickness)
-        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
+        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
         
     def draw_position_line(self,image, color=[255, 0, 0], thickness=13):
         """
@@ -116,4 +116,36 @@ class Functions():
         
         cv2.line(position_image, *position_line, color, thickness)
         
-        return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0)
+        return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0), position_line
+    
+    def find_angle(self, image, mid_line, pos_line, color=[255,255,255], thickness=5):
+        """
+        Calculates the angle between middle line and the position line.
+        Prints the calculated angle on the frame.
+            Parameters:
+                image: The input test image.
+                color: Text color
+                thickness: Text thickness
+        """
+        angle_text = np.zeros_like(image)
+        
+        vector1 = ((mid_line[0][0]-mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
+        vector2 = ((pos_line[0][0]-pos_line[1][0]),(pos_line[0][1]-pos_line[1][1]))
+        len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
+        len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
+        angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
+        angle = str(round(angle * 180 / np.pi,2))
+        
+        ((x1,y1),(x2,y2)) = mid_line
+        if (x1 == x2):
+            turn = 'straight'
+        else:
+            slope = (y2-y1)/(x2-x1)
+            if (slope < 0):
+                turn = 'right'    
+            else:
+                turn = 'left'
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(angle_text, angle + turn, (30,45), font, 1, color, thickness, cv2.LINE_AA)
+        
+        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0)      
