@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+line_temp_left=0
+line_temp_right=0
 class Functions():
     def __init__(self):
         print("IN INIT METHOD")
@@ -55,12 +57,21 @@ class Functions():
                 image: The input test image.
                 lines: The output lines from Hough Transform.
         """
+        global line_temp_left
+        global line_temp_right
         left_lane, right_lane = self.average_slope_intercept(lines)
         y1 = image.shape[0]
         y2 = y1 * 0.4
         left_line  = self.pixel_points(y1, y2, left_lane)
         right_line = self.pixel_points(y1, y2, right_lane)
-        return left_line, right_line
+        if left_line is None or right_line is None:
+            left_line= line_temp_left
+            right_line= line_temp_right
+            return left_line, right_line
+        else:
+            line_temp_left=left_line
+            line_temp_right=right_line
+            return left_line, right_line
         
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """
