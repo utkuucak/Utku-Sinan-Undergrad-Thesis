@@ -7,7 +7,11 @@ from functions import Functions
 func = Functions()
 
 # Capturing frames from video
-cap = skvideo.io.vread('../vids/test.mp4')
+#cap = skvideo.io.vread('../vids/test.mp4')
+#cap = skvideo.io.vread('../vids/test2.mp4')
+#cap = skvideo.io.vread('../vids/d2.mp4')
+#cap = skvideo.io.vread('../vids/test_input.mp4')
+cap = skvideo.io.vread('../vids/test_input2.mp4')
 length = int(cap.shape[0])
 
 # Loading HAAR Cascade weight file
