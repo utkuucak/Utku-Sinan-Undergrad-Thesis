@@ -8,7 +8,10 @@ import struct
 HOST = ''
 PORT = 8089
 
+request = 'Send frame'
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # to reuse address
     print('Socket created')
 
     s.bind((HOST, PORT))
@@ -25,7 +28,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     data = b""
     payload_size = struct.calcsize("I") # size of a struct with correspondin to I
     #print(payload_size)
+    conn.send(bytes(request, "utf-8"))
+    print('Request sent')
     while True:
+
         while len(data) < payload_size:
             data += conn.recv(4096)
             #data = conn.recv(4096)
@@ -38,6 +44,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             msg_size = struct.unpack("I", packed_msg_size)[0]
             while len(data) < msg_size:
                 data += conn.recv(4096)
+
             frame_data = data[:msg_size]
             data = data[msg_size:] # remove the bytes moved to frame_data
 
@@ -45,4 +52,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             frame = pickle.loads(frame_data)
             cv2.imshow('frame', frame)
 
-            cv2.waitKey(1) # wait for 5 ms
+            cv2.waitKey(25)
+            print('Finished with this frame.')
+            conn.send(bytes(request, "utf-8"))
+            print('Request sent')
