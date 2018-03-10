@@ -67,11 +67,10 @@ class Functions():
         if left_line is None or right_line is None:
             left_line= line_temp_left
             right_line= line_temp_right
-            return left_line, right_line
         else:
             line_temp_left=left_line
             line_temp_right=right_line
-            return left_line, right_line
+        return left_line, right_line 
         
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """

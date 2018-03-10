@@ -9,9 +9,9 @@ func = Functions()
 # Capturing frames from video
 #cap = skvideo.io.vread('../vids/test.mp4')
 #cap = skvideo.io.vread('../vids/test2.mp4')
-#cap = skvideo.io.vread('../vids/d2.mp4')
+cap = skvideo.io.vread('../vids/d2.mp4')
 #cap = skvideo.io.vread('../vids/test_input.mp4')
-cap = skvideo.io.vread('../vids/test_input2.mp4')
+#cap = skvideo.io.vread('../vids/test_input2.mp4')
 length = int(cap.shape[0])
 
 # Loading HAAR Cascade weight file
@@ -22,7 +22,8 @@ for control, frame in enumerate(cap):
     src = cv2.cvtColor(frame, cv2.COLOR_RGB2RGBA)
 
     src2 = np.copy(src)
-
+    src2=cv2.blur(src2,(3,3))
+    src3=np.copy(src)
     # obtaining the grayscale version of src for HAAR Cascade
     # and setting paramaters as well as detecting cars with it
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -48,8 +49,11 @@ for control, frame in enumerate(cap):
 
     # Hough line transform to find the lines in edge image
     linesP = cv2.HoughLinesP(masked_image,
-                             1, np.pi / 180, 50, None, 50, 10)
-
+                             1, np.pi / 180, 50, None, 15, 10)
+    if linesP is not None:
+                for i in range(0, len(linesP)):
+                    l = linesP[i][0]
+                    cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
     # Averaging and extrapolating the lines
     result = func.draw_lane_lines(src2, func.lane_lines(src, linesP))
     result, mid_line=func.draw_middle_line(result,func.lane_lines(src, linesP))
