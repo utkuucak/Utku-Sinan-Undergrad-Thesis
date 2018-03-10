@@ -15,7 +15,7 @@ class Functions():
         left_weights  = [] #(length,)
         right_lines   = [] #(slope, intercept)
         right_weights = [] #(length,)
-        
+
         for line in lines:
             for x1, y1, x2, y2 in line:
                 if x1 == x2:
@@ -67,12 +67,11 @@ class Functions():
         if left_line is None or right_line is None:
             left_line= line_temp_left
             right_line= line_temp_right
-            return left_line, right_line
         else:
             line_temp_left=left_line
             line_temp_right=right_line
-            return left_line, right_line
-        
+        return left_line, right_line
+
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """
         Draw lines onto the input image.
@@ -80,14 +79,14 @@ class Functions():
                 image: The input test image.
                 lines: The output lines from Hough Transform.
                 color (Default = red): Line color.
-                thickness (Default = 12): Line thickness. 
+                thickness (Default = 12): Line thickness.
         """
         line_image = np.zeros_like(image)
         for line in lines:
             if line is not None:
                 cv2.line(line_image, *line,  color, thickness)
-        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)    
-        
+        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
+
     def draw_middle_line(self,image, lines, color=[0, 255, 0], thickness=13):
         """
         Draw middle line between road lanes.
@@ -95,7 +94,7 @@ class Functions():
                 image: The input test image.
                 lines: The output lines from Hough Transform.
                 color (Default = red): Line color.
-                thickness (Default = 12): Line thickness. 
+                thickness (Default = 12): Line thickness.
         """
         line_image = np.zeros_like(image)
         for line in lines:
@@ -107,10 +106,10 @@ class Functions():
                 (midxb,midyb)=((l1b[0]+l2b[0])//2,(l1b[1]+l2b[1])//2)
                 (midxe,midye)=((l1e[0]+l2e[0])//2,(l1e[1]+l2e[1])//2)
                 mid=((midxb,midyb),(midxe,midye))
-                
+
                 cv2.line(line_image, *mid,  color, thickness)
         return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
-        
+
     def draw_position_line(self,image, color=[255, 0, 0], thickness=13):
         """
         Draw a line in the middle of the camera's view to track the car's
@@ -118,17 +117,17 @@ class Functions():
             Parameters:
                 image: The input test image.
                 color: Line color.
-                thickness: Line thickness.    
+                thickness: Line thickness.
         """
-        position_image = np.zeros_like(image)        
+        position_image = np.zeros_like(image)
         img_rows = image.shape[0]
         img_columns = image.shape[1]
         position_line = ((int(img_columns*0.5), img_rows),(int(img_columns*0.5), int(img_rows*0.5)))
-        
+
         cv2.line(position_image, *position_line, color, thickness)
-        
+
         return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0), position_line
-    
+
     def find_angle(self, image, mid_line, pos_line, color=[255,255,255], thickness=5):
         """
         Calculates the angle between middle line and the position line.
@@ -146,17 +145,17 @@ class Functions():
         len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
         angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
         angle = str(round(angle * 180 / np.pi,2))
-        
+
         ((x1,y1),(x2,y2)) = mid_line
         if (x1 == x2):
             turn = 'straight'
         else:
             slope = (y2-y1)/(x2-x1)
             if (slope < 0):
-                turn = 'right'    
+                turn = 'right'
             else:
                 turn = 'left'
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(angle_text, angle + turn, (30,45), font, 1, color, thickness, cv2.LINE_AA)
-        
-        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0)      
+
+        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0)

@@ -5,9 +5,9 @@ import sys
 import pickle
 import struct
 import time
-cap = cv2.VideoCapture(0)
-cap.set(3,320)
-cap.set(4,240)
+cap = cv2.VideoCapture('../vids/test.mp4')
+#cap.set(3,320)
+#cap.set(4,240)
 #time.sleep(2)
 #cap.set(15, -8.0)
 
