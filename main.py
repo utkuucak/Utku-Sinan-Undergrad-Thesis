@@ -7,7 +7,11 @@ from functions import Functions
 func = Functions()
 
 # Capturing frames from video
+#cap = skvideo.io.vread('../vids/test.mp4')
+#cap = skvideo.io.vread('../vids/test2.mp4')
 cap = skvideo.io.vread('../vids/d2.mp4')
+#cap = skvideo.io.vread('../vids/test_input.mp4')
+#cap = skvideo.io.vread('../vids/test_input2.mp4')
 length = int(cap.shape[0])
 
 # Loading HAAR Cascade weight file
@@ -45,7 +49,7 @@ for control, frame in enumerate(cap):
 
     # Hough line transform to find the lines in edge image
     linesP = cv2.HoughLinesP(masked_image,
-                             1, np.pi / 180, 50, None, 50, 10)
+                             1, np.pi / 180, 50, None, 15, 10)
     if linesP is not None:
                 for i in range(0, len(linesP)):
                     l = linesP[i][0]
