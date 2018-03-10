@@ -18,7 +18,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print('Socket bind complete')
 
     # parameter is number of unaccepted connections before refusing
-    s.listen(10) # new connections
+    s.listen(100) # new connections
     print('Socket now listening')
 
     # conn is a socket object used fo sending and receiving data
@@ -54,5 +54,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             cv2.waitKey(25)
             print('Finished with this frame.')
+            #input('...')
             conn.send(bytes(request, "utf-8"))
             print('Request sent')
