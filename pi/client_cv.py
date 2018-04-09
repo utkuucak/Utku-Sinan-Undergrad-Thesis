@@ -5,7 +5,10 @@ import sys
 import pickle
 import struct
 import time
-cap = cv2.VideoCapture('../vids/test.mp4')
+import picamera
+from picamera.array import PiRGBArray
+
+#cap = cv2.VideoCapture('../vids/test.mp4')
 #cap.set(3,320)
 #cap.set(4,240)
 #time.sleep(2)
@@ -13,16 +16,25 @@ cap = cv2.VideoCapture('../vids/test.mp4')
 
 #cap.set(CV_CAP_PROP_FRAME_WIDTH,320)
 #cap.set(CV_CAP_PROP_FRAME_HEIGHT,240)
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket:
-    clientsocket.connect(('localhost', 8089))
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera.PiCamera() as camera :
+    clientsocket.connect(('192.168.1.21', 8089))
+    camera.resolution = (320, 240)
+    camera.framerate = 5
+    rawCapture = PiRGBArray(camera, size=(320, 240))
+    time.sleep(2)
     try:    # to release webcam with Ctrl + C
-        while True:
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True): 
+        #while True:
+            frame = frame.array
             incoming = clientsocket.recv(4096)
             if (str(incoming, "utf-8") == 'Send frame'):
 
-                ret, frame = cap.read()
+                #ret, frame = cap.read()
+               
                 data = pickle.dumps(frame)
 
+                # clear buffer for next frame
+                rawCapture.truncate(0)
                 # 'I' means unsigned short
                 # convert the length to a bytes object
                 # concatenate the length data to frame and send it
@@ -30,5 +42,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket:
                 clientsocket.sendall(struct.pack("I", len(data))+data) # ??
                 #time.sleep(0.066)   # wait for 66 ms for 15fps
     except KeyboardInterrupt:
-        cap.release()
+#        cap.release()
         cv2.destroyAllWindows()
