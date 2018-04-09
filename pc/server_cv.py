@@ -1,3 +1,6 @@
+""" Streams video frames from another device and shows on screen """
+
+
 import socket
 import sys
 import cv2
