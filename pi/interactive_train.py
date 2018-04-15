@@ -9,22 +9,21 @@ import io
 import picamera
 from PIL import Image
 
-PWM_frequency = 1000
-full_throttle = 75
-half_throttle = 37.5
 
-left_pos = 5
-left_neg = 3
-left_en = 7
+PWM_frequency = 1000
+full_throttle = 60
+half_throttle = 30
+
+left_pos = 19
+left_neg = 21
+left_en = 23
 
 right_pos = 8
 right_neg = 10
 right_en = 12
 
-p_left = GPIO.PWM(left_en, PWM_frequency)
-p_right = GPIO.PWM(right_en, PWM_frequency)
-p_left.start(0)
-p_right.start(0)
+p_left = 0
+p_right = 0
 
 #chan_list = [Forward, Back, Left, Right]
 chan_list = [left_pos, left_neg, left_en, right_pos, right_neg, right_en]
@@ -37,7 +36,13 @@ def setup():
     GPIO.output(chan_list, GPIO.LOW)
     pygame.init()
     pygame.display.set_mode((320,240))
-   
+    global p_left
+    p_left = GPIO.PWM(left_en, PWM_frequency)
+    global p_right 
+    p_right = GPIO.PWM(right_en, PWM_frequency)
+    p_left.start(0)
+    p_right.start(0)
+       
     #GPIO.output(Enable1, GPIO.HIGH)
     #GPIO.output(Enable2, GPIO.HIGH)
     
@@ -70,7 +75,7 @@ def steer_right():
     p_left.ChangeDutyCycle(half_throttle)
     p_right.ChangeDutyCycle(half_throttle)
 
-def steer_neutral():
+#def steer_neutral():
     #GPIO.output([Right, Left], GPIO.LOW)
 
 def forward_left():
