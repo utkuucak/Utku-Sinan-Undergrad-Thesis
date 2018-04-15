@@ -9,17 +9,26 @@ import io
 import picamera
 from PIL import Image
 
-Forward = 5
-Back = 3
-Enable1 = 7
+PWM_frequency = 1000
+full_throttle = 75
+half_throttle = 37.5
 
-Right = 8
-Left = 10
-Enable2 = 12
+left_pos = 5
+left_neg = 3
+left_en = 7
+
+right_pos = 8
+right_neg = 10
+right_en = 12
+
+p_left = GPIO.PWM(left_en, PWM_frequency)
+p_right = GPIO.PWM(right_en, PWM_frequency)
+p_left.start(0)
+p_right.start(0)
 
 #chan_list = [Forward, Back, Left, Right]
-chan_list = [Forward, Back, Enable1, Left, Right, Enable2]
-direction_list = [Forward, Back, Left, Right]
+chan_list = [left_pos, left_neg, left_en, right_pos, right_neg, right_en]
+#direction_list = [Forward, Back, Left, Right]
 
 
 def setup():
@@ -28,55 +37,74 @@ def setup():
     GPIO.output(chan_list, GPIO.LOW)
     pygame.init()
     pygame.display.set_mode((320,240))
-    GPIO.output(Enable1, GPIO.HIGH)
-    GPIO.output(Enable2, GPIO.HIGH)
+   
+    #GPIO.output(Enable1, GPIO.HIGH)
+    #GPIO.output(Enable2, GPIO.HIGH)
+    
 
 def destroy():
         GPIO.output(chan_list, GPIO.LOW)
         GPIO.cleanup()
 
 def go_forward():
-    GPIO.output(Forward, GPIO.HIGH)
-    GPIO.output(Back, GPIO.LOW)
+    GPIO.output([left_pos, right_pos], GPIO.HIGH)
+    GPIO.output([left_neg, right_neg], GPIO.LOW)
+    p_left.ChangeDutyCycle(full_throttle)
+    p_right.ChangeDutyCycle(full_throttle)    
 
 def go_reverse():
-    GPIO.output(Back, GPIO.HIGH)
-    GPIO.output(Forward, GPIO.LOW)
+    GPIO.output([left_pos, right_pos], GPIO.LOW)
+    GPIO.output([left_neg, right_neg], GPIO.HIGH)
+    p_left.ChangeDutyCycle(full_throttle)
+    p_right.ChangeDutyCycle(full_throttle)    
 
 def steer_left():
-    GPIO.output(Left, GPIO.HIGH)
-    GPIO.output(Right, GPIO.LOW)
+    GPIO.output([left_neg, right_pos], GPIO.HIGH)
+    GPIO.output([left_pos, right_neg], GPIO.LOW)
+    p_left.ChangeDutyCycle(half_throttle)
+    p_right.ChangeDutyCycle(half_throttle)    
 
 def steer_right():
-    GPIO.output(Right, GPIO.HIGH)
-    GPIO.output(Left, GPIO.LOW)
+    GPIO.output([left_neg, right_pos], GPIO.LOW)
+    GPIO.output([left_pos, right_neg], GPIO.HIGH)
+    p_left.ChangeDutyCycle(half_throttle)
+    p_right.ChangeDutyCycle(half_throttle)
 
 def steer_neutral():
-    GPIO.output([Right, Left], GPIO.LOW)
+    #GPIO.output([Right, Left], GPIO.LOW)
 
 def forward_left():
-    GPIO.output([Forward, Left], GPIO.HIGH)
-    GPIO.output([Back, Right], GPIO.LOW)
+    GPIO.output([left_pos, right_pos], GPIO.HIGH)
+    GPIO.output([left_neg, right_neg], GPIO.LOW)
+    p_left.ChangeDutyCycle(half_throttle)
+    p_right.ChangeDutyCycle(full_throttle)
 
 def forward_right():
-    GPIO.output([Forward, Right], GPIO.HIGH)
-    GPIO.output([Back, Left], GPIO.LOW)
+    GPIO.output([left_pos, right_pos], GPIO.HIGH)
+    GPIO.output([left_neg, right_neg], GPIO.LOW)
+    p_left.ChangeDutyCycle(full_throttle)
+    p_right.ChangeDutyCycle(half_throttle)
 
 def back_left():
-    GPIO.output([Back, Left], GPIO.HIGH)
-    GPIO.output([Forward, Right], GPIO.LOW)
+    GPIO.output([left_pos, right_pos], GPIO.LOW)
+    GPIO.output([left_neg, right_neg], GPIO.HIGH)
+    p_left.ChangeDutyCycle(half_throttle)
+    p_right.ChangeDutyCycle(full_throttle)
 
 def back_right():
-    GPIO.output([Forward, Left], GPIO.LOW)
-    GPIO.output([Back, Right], GPIO.HIGH)
+    GPIO.output([left_pos, right_pos], GPIO.LOW)
+    GPIO.output([left_neg, right_neg], GPIO.HIGH)
+    p_left.ChangeDutyCycle(full_throttle)
+    p_right.ChangeDutyCycle(half_throttle)
 
 def go(Direction):
         GPIO.output(chan_list, GPIO.LOW)
         GPIO.output(Direction, GPIO.HIGH)
 
 def stop():
-        GPIO.output(direction_list, GPIO.LOW)
-
+        #GPIO.output(direction_list, GPIO.LOW)
+        p_left.ChangeDutyCycle(0)
+        p_right.ChangeDutyCycle(0)
 def interactive_train():
     with picamera.PiCamera() as camera:
         camera.resolution = (320, 240)
@@ -132,7 +160,7 @@ def interactive_train():
                     camera.capture(stream, format='jpeg', use_video_port=True)
                     stream.seek(0)
                     image = Image.open(stream)
-                    image.save('image%s.jpg' % ("-" + direction + "-" + str(time.time())), formta="JPEG")
+                    image.save('image%s.jpg' % ("-" + direction + "-" + str(time.time())), format="JPEG")
 
                 elif event.type == pygame.KEYUP:
                     print("Stop")
