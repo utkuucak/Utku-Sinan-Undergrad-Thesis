@@ -14,7 +14,7 @@ camera = PiCamera()
 camera.resolution = (320, 240)
 camera.framerate = 8
 rawCapture = PiRGBArray(camera, size=(320, 240))
-car_cascade = cv2.CascadeClassifier('../train/cars.xml')
+car_cascade = cv2.CascadeClassifier('../train/human.xml')
 time.sleep(0.5)
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     image = frame.array
@@ -26,8 +26,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     src3=np.copy(src)
     
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    cars = car_cascade.detectMultiScale(gray, scaleFactor=1.1,
-                                        minNeighbors=8, minSize=(25, 25))
+    cars = None
+    cars = car_cascade.detectMultiScale(gray, scaleFactor=1.01,
+                                        minNeighbors=4, minSize=(5, 5))
 
     # Canny edge detection
     dst = cv2.Canny(src2, 100, 100, None, 3)
@@ -60,6 +61,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         result, mid_line=func.draw_middle_line(result,func.lane_lines(src, linesP))
         result, pos_line=func.draw_position_line(result)
         result = func.find_angle(result, mid_line, pos_line)
+    for (x, y, w, h) in cars:
+        cv2.rectangle(result, (x, y), (x+w, y+h), (255, 0, 0), 2)
     # Showing the result
     cv2.imshow('frame', result)
 
