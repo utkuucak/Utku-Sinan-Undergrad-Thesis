@@ -11,7 +11,7 @@ from PIL import Image
 
 
 PWM_frequency = 1000
-full_throttle = 60
+full_throttle = 30
 half_throttle = 30
 
 left_pos = 19
@@ -54,8 +54,15 @@ def destroy():
 def go_forward():
     GPIO.output([left_pos, right_pos], GPIO.HIGH)
     GPIO.output([left_neg, right_neg], GPIO.LOW)
-    p_left.ChangeDutyCycle(full_throttle)
-    p_right.ChangeDutyCycle(full_throttle)    
+    #p_left.ChangeDutyCycle(full_throttle)
+    #p_right.ChangeDutyCycle(full_throttle)
+    pwm_number = 0
+    while(pwm_number <30):
+        pwm_number = pwm_number+5
+        p_left.ChangeDutyCycle(pwm_number)
+        p_right.ChangeDutyCycle(pwm_number)
+        time.sleep(0.005)
+
 
 def go_reverse():
     GPIO.output([left_pos, right_pos], GPIO.LOW)
@@ -108,8 +115,15 @@ def go(Direction):
 
 def stop():
         #GPIO.output(direction_list, GPIO.LOW)
-        p_left.ChangeDutyCycle(0)
-        p_right.ChangeDutyCycle(0)
+        #p_left.ChangeDutyCycle(0)
+        #p_right.ChangeDutyCycle(0)
+        pwm_number = 30
+        while( pwm_number > 0):
+            pwm_number = pwm_number - 5
+            p_left.ChangeDutyCycle(pwm_number)
+            p_right.ChangeDutyCycle(pwm_number)
+            time.sleep(0.005)
+
 def interactive_train():
     with picamera.PiCamera() as camera:
         camera.resolution = (320, 240)
