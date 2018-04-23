@@ -4,9 +4,12 @@ import numpy as np
 import time
 
 class Image_Interpreter():
-    def __init__(self,line_temp_left=None,line_temp_right=None):
+    def __init__(self,line_temp_left=None,line_temp_right=None,mid_line=((326,360),(331,144)),pos_line=((320,360),(320,180)),angle=1):
         self.line_temp_left=line_temp_left
         self.line_temp_right=line_temp_right
+        self.mid_line=mid_line
+        self.pos_line=pos_line
+        self.angle=angle
         print("IN INIT METHOD")
     def average_slope_intercept(self,lines):
         """
@@ -206,6 +209,9 @@ class Image_Interpreter():
                                      1, np.pi / 180, 50, None, 15, 10)
             #print(linesP)
             result = src2
+#            mid_line=((326,360),(331,144))
+#            pos_line=((320,360),(320,180))
+#            angle=1
             if linesP is not None:
                 for i in range(0, len(linesP)):
                     l = linesP[i][0]
@@ -222,7 +228,7 @@ class Image_Interpreter():
         
             # Showing the result
             cv2.imshow('frame', result)
-        
+            #return  mid_line, pos_line, angle
             # Setting the result video frame break conditions
             if cv2.waitKey(1) & 0xFF == ord('q') or control == length:
                 break
