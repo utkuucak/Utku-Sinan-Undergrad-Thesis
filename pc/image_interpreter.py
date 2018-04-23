@@ -4,12 +4,12 @@ import numpy as np
 import time
 
 class Image_Interpreter():
-    def __init__(self,line_temp_left=None,line_temp_right=None,mid_line=((326,360),(331,144)),pos_line=((320,360),(320,180)),angle=1):
+    def __init__(self,line_temp_left=None,line_temp_right=None,theMid=None,thePos=None,theAngle=None):
         self.line_temp_left=line_temp_left
         self.line_temp_right=line_temp_right
-        self.mid_line=mid_line
-        self.pos_line=pos_line
-        self.angle=angle
+        self.theMid=theMid
+        self.thePos=thePos
+        self.theAngle=theAngle
         print("IN INIT METHOD")
     def average_slope_intercept(self,lines):
         """
@@ -222,17 +222,22 @@ class Image_Interpreter():
                 result, pos_line=self.draw_position_line(result)
                 result, angle = self.find_angle(result, mid_line, pos_line)
                 print("mid: ",mid_line," Pos: ",pos_line," Angle: ",angle)
+                global theMid
+                theMid=mid_line
+                global thePos
+                thePos=pos_line
+                global theAngle
+                theAngle=angle
             # Drawing rectangle on cars which were found by HAAR Cascade
             for (x, y, w, h) in cars:
                 cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
         
             # Showing the result
             cv2.imshow('frame', result)
-            #return  mid_line, pos_line, angle
+            #return  self.theMid, self.thePos, self.theAngle
             # Setting the result video frame break conditions
             if cv2.waitKey(1) & 0xFF == ord('q') or control == length:
                 break
-            #return  mid_line, pos_line, angle
         cv2.destroyAllWindows()
         
         
