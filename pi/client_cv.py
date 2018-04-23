@@ -17,7 +17,7 @@ from picamera.array import PiRGBArray
 #cap.set(CV_CAP_PROP_FRAME_WIDTH,320)
 #cap.set(CV_CAP_PROP_FRAME_HEIGHT,240)
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera.PiCamera() as camera :
-    clientsocket.connect(('192.168.1.21', 8089))
+    clientsocket.connect(('192.168.43.186', 8089))
     camera.resolution = (320, 240)
     camera.framerate = 5
     rawCapture = PiRGBArray(camera, size=(320, 240))
