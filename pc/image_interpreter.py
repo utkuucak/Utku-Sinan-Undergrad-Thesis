@@ -50,8 +50,8 @@ class Image_Interpreter():
         if line is None:
             return None
         slope, intercept = line
-        if slope==0:
-            time.sleep(50)
+        #if slope==0:
+            #time.sleep(50)
         x1 = int((y1 - intercept)/(slope+eps))
         x2 = int((y2 - intercept)/(slope+eps))
         y1 = int(y1)
@@ -107,6 +107,7 @@ class Image_Interpreter():
                 thickness (Default = 12): Line thickness.
         """
         line_image = np.zeros_like(image)
+        mid = ((0,0),(0,0))
         for line in lines:
             if line is not None:
                 #b=beginning e=end  l1b=line1beginningpoints

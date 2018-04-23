@@ -13,7 +13,7 @@ import pickle
 import numpy as np
 import struct
 
-class frameReceiver:
+class FrameReceiver:
     'This is the class for handling between Raspberry Pi and Server PC.'
     
     def __init__(self, host, port):
