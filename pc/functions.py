@@ -1,5 +1,8 @@
 import cv2
 import numpy as np
+import time
+
+
 line_temp_left=0
 line_temp_right=0
 class Functions():
@@ -33,7 +36,7 @@ class Functions():
         right_lane = np.dot(right_weights, right_lines) / np.sum(right_weights) if len(right_weights) > 0 else None
         return left_lane, right_lane
 
-    def pixel_points(self,y1, y2, line):
+    def pixel_points(self,y1, y2, line, eps=0.000001):
         """
         Converts the slope and intercept of each line into pixel points.
             Parameters:
@@ -44,8 +47,10 @@ class Functions():
         if line is None:
             return None
         slope, intercept = line
-        x1 = int((y1 - intercept)/slope)
-        x2 = int((y2 - intercept)/slope)
+        if slope==0:
+            time.sleep(50)
+        x1 = int((y1 - intercept)/(slope+eps))
+        x2 = int((y2 - intercept)/(slope+eps))
         y1 = int(y1)
         y2 = int(y2)
         return ((x1, y1), (x2, y2))
@@ -70,7 +75,11 @@ class Functions():
         else:
             line_temp_left=left_line
             line_temp_right=right_line
+<<<<<<< HEAD
         return left_line, right_line
+=======
+            return left_line, right_line
+>>>>>>> refs/remotes/origin/master
 
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """
@@ -138,7 +147,7 @@ class Functions():
                 thickness: Text thickness
         """
         angle_text = np.zeros_like(image)
-        
+
         vector1 = ((mid_line[0][0]-mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
         vector2 = ((pos_line[0][0]-pos_line[1][0]),(pos_line[0][1]-pos_line[1][1]))
         len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
