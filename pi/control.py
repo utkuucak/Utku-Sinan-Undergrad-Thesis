@@ -42,9 +42,9 @@ class Controller:
         GPIO.output(self.chan_list, GPIO.LOW)
         GPIO.cleanup()
         
-    def drive (self, angle, mid):
+    def drive (self, angle):
         # when both pwm dc s are 0 and mid line and angle is found start driving
-        if self.right_speed==0 and self.left_speed==0 and angle!=None and mid!=None:
+        if self.right_speed==0 and self.left_speed==0 and angle!=None:
             while self.right_speed < 30:
                 self.right_speed = self.right_speed + 5
                 self.left_speed = self.left_speed + 5
@@ -53,7 +53,7 @@ class Controller:
                 time.sleep(0.005)
                 return "Driving started."
         
-        elif angle>0 and abs(angle)<45 and mid != None: # turn right
+        elif angle>0 and abs(angle)<45: # turn right
             pwm_change = int((angle/5) + 1)
             self.left_speed += pwm_change
             self.right_speed -= pwm_change
@@ -72,7 +72,7 @@ class Controller:
             
             return "Turning right."
                 
-        elif angle<0 and abs(angle)<45 and mid != None:
+        elif angle<0 and abs(angle)<45:
             pwm_change = int((angle/5) + 1)
             self.left_speed -= pwm_change
             self.right_speed += pwm_change  
