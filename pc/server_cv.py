@@ -56,12 +56,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             print("Another frame received...")
             frame = pickle.loads(frame_data)
-            interpreter.interprete_img(frame)   
+            mid, pos, angle = interpreter.interprete_img(frame)
+            
+            if angle != None: print('Angle: ' + str(angle))
+            else: print ('No line is found.')
+            
             
             #cv2.imshow('frame', frame)
 
             cv2.waitKey(25)
-            print('Finished with this frame.')
+            print('Angle: ' + str(angle))
             #input('...')
             conn.send(bytes(request, "utf-8"))
             print('Request sent')

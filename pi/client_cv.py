@@ -27,8 +27,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera
         #while True:
             frame = frame.array
             incoming = clientsocket.recv(4096)
-            if (str(incoming, "utf-8") == 'Send frame'):
-
+            incoming_str = str(incoming, "utf-8")
+            if (incoming_str[0:5] == 'Angle'):
+                print(incoming_str[7:])                
                 #ret, frame = cap.read()
                
                 data = pickle.dumps(frame)
