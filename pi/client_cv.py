@@ -28,11 +28,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera
             frame = frame.array
             incoming = clientsocket.recv(4096)
             incoming_str = str(incoming, "utf-8")
-            if (incoming_str[0:4] == 'ANG'):
-                print(incoming_str[4:])                
-                #ret, frame = cap.read()
-            elif (incoming_str[0:4] == 'NLN'):
-                print('No line found.')
+            if ('Send' in incoming_str):                      
+                #ret, frame = cap.read()           
                 data = pickle.dumps(frame)
 
                 # clear buffer for next frame
