@@ -59,7 +59,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             mid, pos, angle = interpreter.interprete_img(frame)
             
             if angle != None:
-                response_string = 'ANG: ' + str(angle) # angle
+                response_string = 'ANG:' + str(angle) # angle
             else:
                 response_string = 'NLN' # no line
             

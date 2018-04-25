@@ -32,16 +32,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera
                 print(incoming_str[4:])                
                 #ret, frame = cap.read()
             elif (incoming_str[0:4] == 'NLN'):
-               print('No line found.')
-               data = pickle.dumps(frame)
+                print('No line found.')
+                data = pickle.dumps(frame)
 
                 # clear buffer for next frame
-               rawCapture.truncate(0)
+                rawCapture.truncate(0)
                 # 'I' means unsigned short
                 # convert the length to a bytes object
                 # concatenate the length data to frame and send it
-               print("Sending frame...")
-               clientsocket.sendall(struct.pack("I", len(data))+data) # ??
+                print("Sending frame...")
+                clientsocket.sendall(struct.pack("I", len(data))+data) # ??
                 #time.sleep(0.066)   # wait for 66 ms for 15fps
     except KeyboardInterrupt:
 #        cap.release()
