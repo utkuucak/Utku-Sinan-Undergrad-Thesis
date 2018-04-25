@@ -29,7 +29,9 @@ class Controller:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.chan_list, GPIO.OUT)
         GPIO.output(self.chan_list, GPIO.LOW)
-        
+        GPIO.output([self.left_neg, self.right_neg], GPIO.HIGH)
+
+
         self.p_left = GPIO.PWM(self.left_en, self.PWM_frequency)
         self.p_right = GPIO.PWM(self.right_en, self.PWM_frequency)
         
@@ -44,14 +46,19 @@ class Controller:
         
     def drive (self, angle):
         # when both pwm dc s are 0 and mid line and angle is found start driving
-        if self.right_speed==0 and self.left_speed==0 and angle!=None:
+        
+        # debug
+        print('Angle: ' + str(angle))
+        print( 'Right Speed: ' + str(self.right_speed))
+        print('Left Speed: ' + str(self.left_speed))
+        if self.right_speed==0 and self.left_speed==0 and type(angle) is float:
             while self.right_speed < 30:
                 self.right_speed = self.right_speed + 5
                 self.left_speed = self.left_speed + 5
                 self.p_left.ChangeDutyCycle(self.left_speed)
                 self.p_right.ChangeDutyCycle(self.right_speed)
                 time.sleep(0.005)
-                return "Driving started."
+            return "Driving started."
         
         elif angle>0 and abs(angle)<45: # turn right
             pwm_change = int((angle/5) + 1)
@@ -90,4 +97,5 @@ class Controller:
                 self.p_right.ChangeDutyCycle(self.right_speed)
                 
             return "Turning left."    
-                
+        else:
+            return "Nothing is happening."

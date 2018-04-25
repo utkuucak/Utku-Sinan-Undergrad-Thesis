@@ -46,6 +46,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera
             if ('ANG' in incoming_str):
                 angle = float(incoming_str[4:])
                 print(str(angle))
+                print(cnt.drive(angle))
     except KeyboardInterrupt:
 #        cap.release()
         cv2.destroyAllWindows()
