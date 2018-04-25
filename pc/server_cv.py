@@ -58,8 +58,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             frame = pickle.loads(frame_data)
             mid, pos, angle = interpreter.interprete_img(frame)
             
-            if angle != None: print('Angle: ' + str(angle))
-            else: print ('No line is found.')
+            if angle != None:
+                response_string = 'ANG: ' + str(angle) # angle
+            else:
+                response_string = 'NLN' # no line
             
             
             #cv2.imshow('frame', frame)
@@ -67,5 +69,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             cv2.waitKey(25)
             print('Angle: ' + str(angle))
             #input('...')
-            conn.send(bytes(request, "utf-8"))
+            #conn.send(bytes(request, "utf-8"))
             print('Request sent')
