@@ -69,5 +69,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             cv2.waitKey(25)
             print('Angle: ' + str(angle))
             #input('...')
-            conn.send(bytes(request, "utf-8"))
+            #•conn.send(bytes(request, "utf-8"))
+            conn.send(bytes(response_string, "utf-8"))
             print('Request sent')
