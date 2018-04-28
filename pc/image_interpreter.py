@@ -194,16 +194,18 @@ class Image_Interpreter():
         # Defining a ROI
         [rows, cols, chan] = src2.shape[:3]
         mask = np.zeros(dst.shape, dtype=np.uint8)
-        bottom_left = [cols*0.10, rows*0.8]
-        bottom_right = [cols*0.90, rows*0.8]
-        top_left = [cols*0.35, rows*0.4]
-        top_right = [cols*0.75, rows*0.4]
+        bottom_left = [cols*0, rows*1]
+        bottom_right = [cols*1, rows*1]
+        top_left = [cols*0.1, rows*0.4]
+        top_right = [cols*0.9, rows*0.4]
         roi_corners = np.array([[bottom_left, top_left, top_right,
                                  bottom_right]], dtype=np.int32)
         channel_count = chan
         ignore_mask_color = (255,)*channel_count
         cv2.fillPoly(mask, roi_corners, ignore_mask_color)
         masked_image = cv2.bitwise_and(dst, mask)
+        
+        
         # Hough line transform to find the lines in edge image
         linesP = cv2.HoughLinesP(masked_image,
                                  1, np.pi / 180, 50, None, 15, 10)
@@ -232,6 +234,7 @@ class Image_Interpreter():
             
         # Showing the result
         cv2.imshow('frame', result)
+        #cv2.imshow('frame', masked_image)
         return  self.theMid, self.thePos, self.theAngle
         # Setting the result video frame break conditions        
         

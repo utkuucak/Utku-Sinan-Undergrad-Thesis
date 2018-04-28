@@ -45,57 +45,69 @@ class Controller:
         GPIO.cleanup()
         
     def drive (self, angle):
-        # when both pwm dc s are 0 and mid line and angle is found start driving
         
+        angle = int(angle)
+        dc_dict = {0:[30,30], 1:[30, 28], -1:[28,30], 2:[30,26], -2:[26,30], 3:[30,24], -3:[24,30],
+                   4:[30,22], -4:[22,30], 5:[30,20], -5:[20,30], 6:[32,20], -6:[20,32], 7:[34,20], -7:[20,34],
+                   8:[36,20], -8:[20,36], 9:[38,20], -9:[20,38], 10:[40,20], -10:[20,40]}
         # debug
         print('Angle: ' + str(angle))
         print( 'Right Speed: ' + str(self.right_speed))
         print('Left Speed: ' + str(self.left_speed))
-        if self.right_speed==0 and self.left_speed==0 and type(angle) is float:
+        
+        # when both pwm dc s are 0 and mid line and angle is found start driving
+        if self.right_speed==0 and self.left_speed==0 and type(angle) is int:
             while self.right_speed < 30:
                 self.right_speed = self.right_speed + 5
                 self.left_speed = self.left_speed + 5
                 self.p_left.ChangeDutyCycle(self.left_speed)
                 self.p_right.ChangeDutyCycle(self.right_speed)
                 time.sleep(0.005)
-            return "Driving started."
+            return "Driving started."        
         
-        elif angle>0 and abs(angle)<45: # turn right
-            pwm_change = int((angle/5) + 1)
-            self.left_speed += pwm_change
-            self.right_speed -= pwm_change
-            
-            if self.left_speed < 60:
-                self.p_left.ChangeDutyCycle(self.left_speed)
-            else: 
-                self.left_speed = 60
-                self.p_left.ChangeDutyCycle(self.left_speed) 
-                
-            if self.right_speed > 25:
-                self.p_right.ChangeDutyCycle(self.right_speed)
-            else:
-                self.right_speed = 25
-                self.p_right.ChangeDutyCycle(self.right_speed)
-            
-            return "Turning right."
-                
-        elif angle<0 and abs(angle)<45:
-            pwm_change = int((angle/5) + 1)
-            self.left_speed -= pwm_change
-            self.right_speed += pwm_change  
-            
-            if self.left_speed > 25:
-                self.p_left.ChangeDutyCycle(self.left_speed)
-            else: 
-                self.left_speed = 25
-                self.p_left.ChangeDutyCycle(self.left_speed) 
-                
-            if self.right_speed < 60:
-                self.p_right.ChangeDutyCycle(self.right_speed)
-            else:
-                self.right_speed = 60
-                self.p_right.ChangeDutyCycle(self.right_speed)
-                
-            return "Turning left."    
-        else:
-            return "Nothing is happening."
+        elif abs(angle) <= 10:
+            self.left_speed = dc_dict[angle][0]
+            self.right_speed = dc_dict[angle][1]
+             
+            self.p_left.ChangeDutyCycle(self.left_speed)
+            self.p_right.ChangeDutyCycle(self.right_speed)
+            return ("Driving.")
+#        elif angle>0 and abs(angle)<45: # turn right
+#            pwm_change = int((angle/5) + 1)
+#            self.left_speed += pwm_change
+#            self.right_speed -= pwm_change
+#            
+#            if self.left_speed < 60:
+#                self.p_left.ChangeDutyCycle(self.left_speed)
+#            else: 
+#                self.left_speed = 60
+#                self.p_left.ChangeDutyCycle(self.left_speed) 
+#                
+#            if self.right_speed > 25:
+#                self.p_right.ChangeDutyCycle(self.right_speed)
+#            else:
+#                self.right_speed = 25
+#                self.p_right.ChangeDutyCycle(self.right_speed)
+#            
+#            return "Turning right."
+#                
+#        elif angle<0 and abs(angle)<45:
+#            pwm_change = int((angle/5) + 1)
+#            self.left_speed -= pwm_change
+#            self.right_speed += pwm_change  
+#            
+#            if self.left_speed > 25:
+#                self.p_left.ChangeDutyCycle(self.left_speed)
+#            else: 
+#                self.left_speed = 25
+#                self.p_left.ChangeDutyCycle(self.left_speed) 
+#                
+#            if self.right_speed < 60:
+#                self.p_right.ChangeDutyCycle(self.right_speed)
+#            else:
+#                self.right_speed = 60
+#                self.p_right.ChangeDutyCycle(self.right_speed)
+#                
+#            return "Turning left."    
+#        else:
+#            return "Nothing is happening."
