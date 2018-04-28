@@ -1,12 +1,15 @@
 import cv2
+import skvideo.io
 import numpy as np
 import time
 
-
-line_temp_left=0
-line_temp_right=0
-class Functions():
-    def __init__(self):
+class Image_Interpreter():
+    def __init__(self,line_temp_left=None,line_temp_right=None,theMid=None,thePos=None,theAngle=None):
+        self.line_temp_left=line_temp_left
+        self.line_temp_right=line_temp_right
+        self.theMid=theMid
+        self.thePos=thePos
+        self.theAngle=theAngle
         print("IN INIT METHOD")
     def average_slope_intercept(self,lines):
         """
@@ -47,8 +50,8 @@ class Functions():
         if line is None:
             return None
         slope, intercept = line
-        if slope==0:
-            time.sleep(50)
+        #if slope==0:
+            #time.sleep(50)
         x1 = int((y1 - intercept)/(slope+eps))
         x2 = int((y2 - intercept)/(slope+eps))
         y1 = int(y1)
@@ -62,24 +65,21 @@ class Functions():
                 image: The input test image.
                 lines: The output lines from Hough Transform.
         """
-        global line_temp_left
-        global line_temp_right
+        #global line_temp_left
+        #global line_temp_right
         left_lane, right_lane = self.average_slope_intercept(lines)
         y1 = image.shape[0]
         y2 = y1 * 0.4
         left_line  = self.pixel_points(y1, y2, left_lane)
         right_line = self.pixel_points(y1, y2, right_lane)
         if left_line is None or right_line is None:
-            left_line= line_temp_left
-            right_line= line_temp_right
-        else:
-            line_temp_left=left_line
-            line_temp_right=right_line
-<<<<<<< HEAD
-        return left_line, right_line
-=======
+            left_line= self.line_temp_left
+            right_line= self.line_temp_right
             return left_line, right_line
->>>>>>> refs/remotes/origin/master
+        else:
+            self.line_temp_left=left_line
+            self.line_temp_right=right_line
+            return left_line, right_line
 
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """
@@ -93,7 +93,8 @@ class Functions():
         line_image = np.zeros_like(image)
         for line in lines:
             if line is not None:
-                cv2.line(line_image, *line,  color, thickness)
+                if type(line) is not int:
+                    cv2.line(line_image, *line,  color, thickness)
         return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
 
     def draw_middle_line(self,image, lines, color=[0, 255, 0], thickness=13):
@@ -106,6 +107,7 @@ class Functions():
                 thickness (Default = 12): Line thickness.
         """
         line_image = np.zeros_like(image)
+        mid = ((0,0),(0,0))
         for line in lines:
             if line is not None:
                 #b=beginning e=end  l1b=line1beginningpoints
@@ -154,7 +156,7 @@ class Functions():
         len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
         angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
         angle = str(round(angle * 180 / np.pi,2))
-
+        angleAsFloat=float(angle)
         ((x1,y1),(x2,y2)) = mid_line
         if (x1 == x2):
             turn = 'straight'
@@ -164,7 +166,106 @@ class Functions():
                 turn = 'right'
             else:
                 turn = 'left'
+                angleAsFloat = -angleAsFloat
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(angle_text, angle + turn, (30,45), font, 1, color, thickness, cv2.LINE_AA)
-
-        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0)
+        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0),angleAsFloat
+    def interprete_img(self,cap):
+        #cap = skvideo.io.vread('../vids/pi_test_no_ps.mp4')
+        length = int(cap.shape[0])
+        car_cascade = cv2.CascadeClassifier('../train/cars.xml')
+        # source image and copy of it
+        src = cv2.cvtColor(cap, cv2.COLOR_RGB2RGBA)
+    
+        src2 = np.copy(src)
+        src2=cv2.blur(src2,(3,3))
+        #ret,src2 = cv2.threshold(src2,45,255,cv2.THRESH_BINARY)
+        #src4=np.copy(src2)
+        src3=np.copy(src)
+        # obtaining the grayscale version of src for HAAR Cascade
+        # and setting paramaters as well as detecting cars with it
+        gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
+        cars = car_cascade.detectMultiScale(gray, scaleFactor=1.1,
+                                            minNeighbors=8, minSize=(25, 25))
+    
+        # Canny edge detection
+        dst = cv2.Canny(src2, 225, 225, None, 3)
+    
+        # Defining a ROI
+        [rows, cols, chan] = src2.shape[:3]
+        mask = np.zeros(dst.shape, dtype=np.uint8)
+        bottom_left = [cols*0, rows*1]
+        bottom_right = [cols*1, rows*1]
+        top_left = [cols*0.1, rows*0.4]
+        top_right = [cols*0.9, rows*0.4]
+        roi_corners = np.array([[bottom_left, top_left, top_right,
+                                 bottom_right]], dtype=np.int32)
+        channel_count = chan
+        ignore_mask_color = (255,)*channel_count
+        cv2.fillPoly(mask, roi_corners, ignore_mask_color)
+        masked_image = cv2.bitwise_and(dst, mask)
+        
+        
+        # Hough line transform to find the lines in edge image
+        linesP = cv2.HoughLinesP(masked_image,
+                                 1, np.pi / 180, 50, None, 15, 10)
+        #print(linesP)
+        result = src2
+#            mid_line=((326,360),(331,144))
+#            pos_line=((320,360),(320,180))
+#            angle=1
+        if linesP is not None:
+            for i in range(0, len(linesP)):
+                l = linesP[i][0]
+                cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
+        # Averaging and extrapolating the lines
+            result = self.draw_lane_lines(src3, self.lane_lines(src, linesP))
+            result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
+            result, pos_line=self.draw_position_line(result)
+            result, angle = self.find_angle(result, mid_line, pos_line)
+            #print("mid: ",mid_line," Pos: ",pos_line," Angle: ",angle)
+            
+            self.theMid=mid_line
+            self.thePos=pos_line
+            self.theAngle=angle
+        # Drawing rectangle on cars which were found by HAAR Cascade
+        for (x, y, w, h) in cars:
+            cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            
+        # Showing the result
+        cv2.imshow('frame', result)
+        #cv2.imshow('frame', masked_image)
+        return  self.theMid, self.thePos, self.theAngle
+        # Setting the result video frame break conditions        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

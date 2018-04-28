@@ -1,3 +1,5 @@
+""" OBSOLETE """
+"""
 import socketserver
 import cv2
 import numpy as np
@@ -14,3 +16,4 @@ if __name__ == "__main__":
 
     with socketserver.TCPServer((HOST, PORT), MyTCPHandler) as server:
         server.serve_forever()
+"""

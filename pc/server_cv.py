@@ -1,14 +1,20 @@
+""" Streams video frames from another device and shows on screen """
+
+
 import socket
 import sys
 import cv2
 import pickle
 import numpy as np
 import struct
+import image_interpreter
 
 HOST = ''
 PORT = 8089
 
 request = 'Send frame'
+
+interpreter = image_interpreter.Image_Interpreter()
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # to reuse address
@@ -50,10 +56,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
             print("Another frame received...")
             frame = pickle.loads(frame_data)
-            cv2.imshow('frame', frame)
+            mid, pos, angle = interpreter.interprete_img(frame)
+            
+            if angle != None:
+                response_string = 'ANG:' + str(angle) # angle
+            else:
+                response_string = 'NLN' # no line
+            
+            
+            #cv2.imshow('frame', frame)
 
             cv2.waitKey(25)
-            print('Finished with this frame.')
+            print('Angle: ' + str(angle))
             #input('...')
-            conn.send(bytes(request, "utf-8"))
+            #•conn.send(bytes(request, "utf-8"))
+            conn.send(bytes(response_string, "utf-8"))
             print('Request sent')
