@@ -1,5 +1,5 @@
 import cv2
-import skvideo.io
+#import skvideo.io
 import numpy as np
 import time
 
@@ -171,28 +171,19 @@ class Image_Interpreter():
         cv2.putText(angle_text, angle + turn, (30,45), font, 1, color, thickness, cv2.LINE_AA)
         return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0),angleAsFloat
     def interprete_img(self,cap):
-        #cap = skvideo.io.vread('../vids/pi_test_no_ps.mp4')
-        length = int(cap.shape[0])
-        car_cascade = cv2.CascadeClassifier('../train/cars.xml')
+#        car_cascade = cv2.CascadeClassifier('../train/cars.xml')
         # source image and copy of it
         src = cv2.cvtColor(cap, cv2.COLOR_RGB2RGBA)
-    
-        src2 = np.copy(src)
-        src2=cv2.blur(src2,(3,3))
-        #ret,src2 = cv2.threshold(src2,45,255,cv2.THRESH_BINARY)
-        #src4=np.copy(src2)
-        src3=np.copy(src)
+        [rows, cols, chan] = src.shape[:3]
         # obtaining the grayscale version of src for HAAR Cascade
         # and setting paramaters as well as detecting cars with it
-        gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
-        cars = car_cascade.detectMultiScale(gray, scaleFactor=1.1,
-                                            minNeighbors=8, minSize=(25, 25))
-    
+#        gray = cv2.cvtColor(cap, cv2.COLOR_BGR2GRAY)
+#        cars = car_cascade.detectMultiScale(gray, scaleFactor=1.1,
+#                                            minNeighbors=8, minSize=(25, 25))
         # Canny edge detection
-        dst = cv2.Canny(src2, 225, 225, None, 3)
+        dst = cv2.Canny(cv2.blur(src,(3,3)), 225, 225, None, 3)
     
-        # Defining a ROI
-        [rows, cols, chan] = src2.shape[:3]
+        # Defining a ROI   
         mask = np.zeros(dst.shape, dtype=np.uint8)
         bottom_left = [cols*0, rows*1]
         bottom_right = [cols*1, rows*1]
@@ -210,16 +201,16 @@ class Image_Interpreter():
         linesP = cv2.HoughLinesP(masked_image,
                                  1, np.pi / 180, 50, None, 15, 10)
         #print(linesP)
-        result = src2
+        result = src
 #            mid_line=((326,360),(331,144))
 #            pos_line=((320,360),(320,180))
 #            angle=1
         if linesP is not None:
-            for i in range(0, len(linesP)):
-                l = linesP[i][0]
-                cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
+#            for i in range(0, len(linesP)):
+#                l = linesP[i][0]
+#                cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
         # Averaging and extrapolating the lines
-            result = self.draw_lane_lines(src3, self.lane_lines(src, linesP))
+            result = self.draw_lane_lines(src, self.lane_lines(src, linesP))
             result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
             result, pos_line=self.draw_position_line(result)
             result, angle = self.find_angle(result, mid_line, pos_line)
@@ -229,43 +220,11 @@ class Image_Interpreter():
             self.thePos=pos_line
             self.theAngle=angle
         # Drawing rectangle on cars which were found by HAAR Cascade
-        for (x, y, w, h) in cars:
-            cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
+#        for (x, y, w, h) in cars:
+#            cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
             
         # Showing the result
         cv2.imshow('frame', result)
         #cv2.imshow('frame', masked_image)
         return  self.theMid, self.thePos, self.theAngle
-        # Setting the result video frame break conditions        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        # Setting the result video frame break conditions  
