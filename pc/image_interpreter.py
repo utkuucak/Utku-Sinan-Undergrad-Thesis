@@ -2,7 +2,6 @@ import cv2
 #import skvideo.io
 import numpy as np
 import time
-
 class Image_Interpreter():
     def __init__(self,line_temp_left=None,line_temp_right=None,theMid=None,thePos=None,theAngle=None):
         self.line_temp_left=line_temp_left
@@ -95,7 +94,7 @@ class Image_Interpreter():
             if line is not None:
                 if type(line) is not int:
                     cv2.line(line_image, *line,  color, thickness)
-        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
+        #return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
 
     def draw_middle_line(self,image, lines, color=[0, 255, 0], thickness=13):
         """
@@ -119,7 +118,8 @@ class Image_Interpreter():
                 mid=((midxb,midyb),(midxe,midye))
 
                 cv2.line(line_image, *mid,  color, thickness)
-        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
+        #return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
+        return mid
 
     def draw_position_line(self,image, color=[255, 0, 0], thickness=13):
         """
@@ -137,7 +137,8 @@ class Image_Interpreter():
 
         cv2.line(position_image, *position_line, color, thickness)
 
-        return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0), position_line
+        #return cv2.addWeighted(image, 1.0, position_image, 1.0, 0.0), position_line
+        return position_line
 
     def find_angle(self, image, mid_line, pos_line, color=[255,255,255], thickness=5):
         """
@@ -149,27 +150,31 @@ class Image_Interpreter():
                 thickness: Text thickness
         """
         angle_text = np.zeros_like(image)
-
-        vector1 = ((mid_line[0][0]-mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
-        vector2 = ((pos_line[0][0]-pos_line[1][0]),(pos_line[0][1]-pos_line[1][1]))
-        len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
-        len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
-        angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
+        print("mid: ",mid_line,"pos: ",pos_line  )
+#        vector1 = ((mid_line[0][0]-mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
+#        vector2 = ((pos_line[0][0]-pos_line[1][0]),(pos_line[0][1]-pos_line[1][1]))
+#        len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
+#        len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
+#        angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
+        mid_point=(int((mid_line[0][0]+mid_line[1][0])*0.5),int((mid_line[0][1]+mid_line[1][1])*0.5))
+        pos_point=(pos_line[0][0],pos_line[0][1])
+        tan_angle = ((pos_point[0]-mid_point[0])/(-1*(pos_point[1]-mid_point[1])))
+        angle=np.arctan(tan_angle)
         angle = str(round(angle * 180 / np.pi,2))
         angleAsFloat=float(angle)
-        ((x1,y1),(x2,y2)) = mid_line
-        if (x1 == x2):
-            turn = 'straight'
-        else:
-            slope = (y2-y1)/(x2-x1)
-            if (slope < 0):
-                turn = 'right'
-            else:
-                turn = 'left'
-                angleAsFloat = -angleAsFloat
+#        ((x1,y1),(x2,y2)) = mid_line
+#        if (x1 == x2):
+#            turn = 'straight'
+#        else:
+#            slope = (y2-y1)/(x2-x1)
+#            if (slope < 0):
+#                turn = 'right'
+#            else:
+#                turn = 'left'
+#                angleAsFloat = -angleAsFloat
         font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(angle_text, angle + turn, (30,45), font, 1, color, thickness, cv2.LINE_AA)
-        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0),angleAsFloat
+        cv2.putText(angle_text, angle , (30,45), font, 1, color, thickness, cv2.LINE_AA)
+        return cv2.addWeighted(image, 1.0, angle_text, 1.0, 0.0),angleAsFloat, mid_point, pos_point
     def interprete_img(self,cap):
 #        car_cascade = cv2.CascadeClassifier('../train/cars.xml')
         # source image and copy of it
@@ -210,19 +215,22 @@ class Image_Interpreter():
 #                l = linesP[i][0]
 #                cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
         # Averaging and extrapolating the lines
-            result = self.draw_lane_lines(src, self.lane_lines(src, linesP))
-            result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
-            result, pos_line=self.draw_position_line(result)
-            result, angle = self.find_angle(result, mid_line, pos_line)
-            #print("mid: ",mid_line," Pos: ",pos_line," Angle: ",angle)
+            #result = self.draw_lane_lines(src, self.lane_lines(src, linesP))
+           # result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
+            mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
+            #result, pos_line=self.draw_position_line(result)
+            pos_line=self.draw_position_line(result)
+            result, angle,mid_point, pos_point = self.find_angle(result, mid_line, pos_line)
             
-            self.theMid=mid_line
-            self.thePos=pos_line
+            #print("mid: ",mid_line," Pos: ",pos_line," Angle: ",angle)
+            self.theMid=mid_point
+            self.thePos=pos_point
             self.theAngle=angle
         # Drawing rectangle on cars which were found by HAAR Cascade
 #        for (x, y, w, h) in cars:
 #            cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
-            
+            #result=cv2.line(result, pos_point, mid_point,[255, 0, 0] , thickness=5)
+            cv2.line(result,pos_point,mid_point,[255, 0, 0] , thickness=5)
         # Showing the result
         cv2.imshow('frame', result)
         #cv2.imshow('frame', masked_image)
