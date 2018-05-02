@@ -94,7 +94,7 @@ class Image_Interpreter():
             if line is not None:
                 if type(line) is not int:
                     cv2.line(line_image, *line,  color, thickness)
-        #return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
+        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0)
 
     def draw_middle_line(self,image, lines, color=[0, 255, 0], thickness=13):
         """
@@ -118,8 +118,8 @@ class Image_Interpreter():
                 mid=((midxb,midyb),(midxe,midye))
 
                 cv2.line(line_image, *mid,  color, thickness)
-        #return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
-        return mid
+        return cv2.addWeighted(image, 1.0, line_image, 1.0, 0.0), mid
+        #return mid
 
     def draw_position_line(self,image, color=[255, 0, 0], thickness=13):
         """
@@ -151,7 +151,7 @@ class Image_Interpreter():
         """
         angle_text = np.zeros_like(image)
         print("mid: ",mid_line,"pos: ",pos_line  )
-#        vector1 = ((mid_line[0][0]-mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
+#        vector1 = ((-mid_line[0][0]+mid_line[1][0]),(mid_line[0][1]-mid_line[1][1]))
 #        vector2 = ((pos_line[0][0]-pos_line[1][0]),(pos_line[0][1]-pos_line[1][1]))
 #        len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
 #        len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
@@ -213,11 +213,11 @@ class Image_Interpreter():
         if linesP is not None:
 #            for i in range(0, len(linesP)):
 #                l = linesP[i][0]
-#                cv2.line(src3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
+#                cv2.line(src, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
         # Averaging and extrapolating the lines
-            #result = self.draw_lane_lines(src, self.lane_lines(src, linesP))
-           # result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
-            mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
+            result = self.draw_lane_lines(src, self.lane_lines(src, linesP))
+            result, mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
+            #mid_line=self.draw_middle_line(result,self.lane_lines(src, linesP))
             #result, pos_line=self.draw_position_line(result)
             pos_line=self.draw_position_line(result)
             result, angle,mid_point, pos_point = self.find_angle(result, mid_line, pos_line)
@@ -230,7 +230,7 @@ class Image_Interpreter():
 #        for (x, y, w, h) in cars:
 #            cv2.rectangle(dst, (x, y), (x+w, y+h), (255, 0, 0), 2)
             #result=cv2.line(result, pos_point, mid_point,[255, 0, 0] , thickness=5)
-            cv2.line(result,pos_point,mid_point,[255, 0, 0] , thickness=5)
+            cv2.line(result,pos_point,mid_point,[255, 0, 0] , thickness=10)
         # Showing the result
         cv2.imshow('frame', result)
         #cv2.imshow('frame', masked_image)
