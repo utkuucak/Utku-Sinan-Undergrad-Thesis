@@ -22,7 +22,7 @@ cnt = Controller()
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as clientsocket, picamera.PiCamera() as camera :
     clientsocket.connect(('192.168.43.186', 8089))
     camera.resolution = (320, 240)
-    camera.framerate = 5
+    camera.framerate = 10
     rawCapture = PiRGBArray(camera, size=(320, 240))
     time.sleep(2)
     try:    # to release webcam with Ctrl + C

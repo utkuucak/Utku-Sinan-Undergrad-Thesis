@@ -11,7 +11,7 @@ from PIL import Image
 
 
 PWM_frequency = 1000
-full_throttle = 30
+full_throttle = 23.5
 half_throttle = 30
 
 left_pos = 19
@@ -57,7 +57,7 @@ def go_forward():
     #p_left.ChangeDutyCycle(full_throttle)
     #p_right.ChangeDutyCycle(full_throttle)
     pwm_number = 0
-    while(pwm_number <30):
+    while(pwm_number <20.4):
         pwm_number = pwm_number+5
         p_left.ChangeDutyCycle(pwm_number)
         p_right.ChangeDutyCycle(pwm_number)

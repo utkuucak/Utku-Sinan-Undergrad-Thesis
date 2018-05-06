@@ -46,32 +46,38 @@ class Controller:
         
     def drive (self, angle):
         if angle == angle: #check for Na #check for NaNN
-            angle = int(angle)
+           # angle = int(angle)
    
-        dc_dict = {0:[30,30], 1:[30,30 ], -1:[30,30], 2:[30,30], -2:[30,30], 3:[30,30], -3:[30,30], 4:[30,30], -4:[30,30], 5:[30,30], -5:[30,30], 6:[30,29], -6:[29,30], 7:[30,28], -7:[28,30],
-                   8:[30,27], -8:[27,30], 9:[30,26], -9:[26,30], 10:[30,25], -10:[25,30]}
         # debug
-        print('Angle: ' + str(angle))
-        print( 'Right Speed: ' + str(self.right_speed))
-        print('Left Speed: ' + str(self.left_speed))
-        
-        # when both pwm dc s are 0 and mid line and angle is found start driving
-        if self.right_speed==0 and self.left_speed==0 and type(angle) is int:
-            while self.right_speed < 30:
-                self.right_speed = self.right_speed + 5
-                self.left_speed = self.left_speed + 5
-                self.p_left.ChangeDutyCycle(self.left_speed)
+            print('Angle: ' + str(angle))
+            print( 'Right Speed: ' + str(self.right_speed))
+            print('Left Speed: ' + str(self.left_speed))
+            
+            # when both pwm dc s are 0 and mid line and angle is found start driving
+            if self.right_speed==0 and self.left_speed==0 and type(angle) is int:
+                while self.right_speed < 25:
+                    self.right_speed = self.right_speed + 5
+                    self.left_speed = self.left_speed + 5
+                    self.p_left.ChangeDutyCycle(self.left_speed)
+                    self.p_right.ChangeDutyCycle(self.right_speed)
+                    time.sleep(0.005)
+                return "Driving started."        
+            else:
+                P =20.0
+                change = angle/P
+                self.right_speed = 23 + change
+                self.left_speed = 23 - change
                 self.p_right.ChangeDutyCycle(self.right_speed)
-                time.sleep(0.005)
-            return "Driving started."        
-        
-        elif abs(angle) <= 10:
+                self.p_left.ChangeDutyCycle(self.left_speed) 
+                return("Driving.")
+"""        elif abs(angle) <= 10:
             self.left_speed = dc_dict[angle][0]
             self.right_speed = dc_dict[angle][1]
              
             self.p_left.ChangeDutyCycle(self.left_speed)
             self.p_right.ChangeDutyCycle(self.right_speed)
             return ("Driving.")
+"""            
 #        elif angle>0 and abs(angle)<45: # turn right
 #            pwm_change = int((angle/5) + 1)
 #            self.left_speed += pwm_change
