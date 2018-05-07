@@ -23,7 +23,7 @@ class Image_Interpreter():
 
         for line in lines:
             for x1, y1, x2, y2 in line:
-                if x1 == x2:
+                if x1 == x2:    # when line has 90 degree angle with x axis
                     continue
                 slope = (y2 - y1) / (x2 - x1)
                 intercept = y1 - (slope * x1)
@@ -71,14 +71,25 @@ class Image_Interpreter():
         y2 = y1 * 0.4
         left_line  = self.pixel_points(y1, y2, left_lane)
         right_line = self.pixel_points(y1, y2, right_lane)
-        if left_line is None or right_line is None:
-            left_line= self.line_temp_left
-            right_line= self.line_temp_right
-            return left_line, right_line
+        if left_line is None:
+            left_line = self.line_temp_left
         else:
-            self.line_temp_left=left_line
-            self.line_temp_right=right_line
-            return left_line, right_line
+            self.line_temp_left = left_line
+        if right_line is None:
+            right_line = self.line_temp_right
+        else:
+            self.line_temp_right = right_line
+
+        return left_line, right_line            
+            
+#        if left_line is None or right_line is None:
+#            left_line= self.line_temp_left
+#            right_line= self.line_temp_right
+#            return left_line, right_line
+#        else:
+#            self.line_temp_left=left_line
+#            self.line_temp_right=right_line
+#            return left_line, right_line
 
     def draw_lane_lines(self,image, lines, color=[0, 0, 255], thickness=13):
         """
@@ -156,8 +167,16 @@ class Image_Interpreter():
 #        len1 = np.sqrt(vector1[0]**2 + vector1[1]**2)
 #        len2 = np.sqrt(vector2[0]**2 + vector2[1]**2)
 #        angle = np.arccos(np.dot(vector1, vector2)/(len1*len2)) # this is a number
-        mid_point=(int((mid_line[0][0]+mid_line[1][0])*0.5),int((mid_line[0][1]+mid_line[1][1])*0.5))
-        pos_point=(pos_line[0][0],pos_line[0][1])
+        
+        # point car wants to go
+        # middle point of the mid_line
+        #mid_point=(int((mid_line[0][0]+mid_line[1][0])*0.5),int((mid_line[0][1]+mid_line[1][1])*0.5))
+        
+        # 0.25 length down from the top of the mid_point
+        mid_point = (int((mid_line[1][0]-(mid_line[1][0]-mid_line[0][0])//4)), int((mid_line[1][1]-(mid_line[1][1]-mid_line[0][1])//4)))
+        
+        # front point of the car, doesn't move
+        pos_point=(pos_line[0][0]+10,pos_line[0][1]) # number added to fix offset
         tan_angle = ((pos_point[0]-mid_point[0])/(-1*(pos_point[1]-mid_point[1])))
         angle=np.arctan(tan_angle)
         angle = str(round(angle * 180 / np.pi,2))
