@@ -88,14 +88,14 @@ def steer_right():
 def forward_left():
     GPIO.output([left_pos, right_pos], GPIO.HIGH)
     GPIO.output([left_neg, right_neg], GPIO.LOW)
-    p_left.ChangeDutyCycle(half_throttle)
-    p_right.ChangeDutyCycle(full_throttle)
+    p_left.ChangeDutyCycle(25)
+    p_right.ChangeDutyCycle(0)
 
 def forward_right():
     GPIO.output([left_pos, right_pos], GPIO.HIGH)
     GPIO.output([left_neg, right_neg], GPIO.LOW)
-    p_left.ChangeDutyCycle(full_throttle)
-    p_right.ChangeDutyCycle(half_throttle)
+    p_left.ChangeDutyCycle(0)
+    p_right.ChangeDutyCycle(25)
 
 def back_left():
     GPIO.output([left_pos, right_pos], GPIO.LOW)

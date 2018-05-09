@@ -13,13 +13,13 @@ class Controller:
     def __init__(self):
         self.PWM_frequency = 1000
         
-        self.left_pos = 19  # left motor positive pin
-        self.left_neg = 21  # left motor negative pin
-        self.left_en = 23   # left motor enable
+        self.right_pos = 19  # left motor positive pin
+        self.right_neg = 21  # left motor negative pin
+        self.right_en = 23   # left motor enable
 
-        self.right_pos = 8  # right motor positive
-        self.right_neg = 10 # right motor negative
-        self.right_en = 12  # right motor enable
+        self.left_pos = 8  # right motor positive
+        self.left_neg = 10 # right motor negative
+        self.left_en = 12  # right motor enable
         
         self.left_speed = 0     # left pwm duty cycle
         self.right_speed = 0     # right pwm duty cycle
@@ -55,18 +55,18 @@ class Controller:
             
             # when both pwm dc s are 0 and mid line and angle is found start driving
             if self.right_speed==0 and self.left_speed==0 and type(angle) is int:
-                while self.right_speed < 25:
-                    self.right_speed = self.right_speed + 5
-                    self.left_speed = self.left_speed + 5
+                while self.right_speed < 23:
+                    self.right_speed = self.right_speed + 1
+                    self.left_speed = self.left_speed + 1
                     self.p_left.ChangeDutyCycle(self.left_speed)
                     self.p_right.ChangeDutyCycle(self.right_speed)
                     time.sleep(0.005)
                 return "Driving started."        
             else:
-                P =20.0
+                P =10.0
                 change = angle/P
-                self.right_speed = 23 + change
-                self.left_speed = 23 - change
+                self.right_speed = 23 - change
+                self.left_speed = 23 + change
                 self.p_right.ChangeDutyCycle(self.right_speed)
                 self.p_left.ChangeDutyCycle(self.left_speed) 
                 return("Driving.")
